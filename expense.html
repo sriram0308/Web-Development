@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="Smart Expense Tracker — a local-first personal finance dashboard."
+    />
+    <title>Smart Expense Tracker</title>
+
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%B0%3C/text%3E%3C/svg%3E"
+    />
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <div class="app">
+      <!-- ================= SIDEBAR ================= -->
+
+      <aside class="sidebar" id="sidebar">
+        <div class="logo">
+          <div class="logo-icon"><i class="fa-solid fa-wallet"></i></div>
+          <div class="logo-text">
+            <h2>Smart</h2>
+            <span>Expense Tracker</span>
+          </div>
+        </div>
+
+        <nav class="menu" id="menu" aria-label="Primary">
+          <a href="#/dashboard" class="menu-item" data-route="dashboard">
+            <i class="fa-solid fa-house"></i><span>Dashboard</span>
+          </a>
+          <a href="#/add" class="menu-item" data-route="add">
+            <i class="fa-solid fa-plus"></i><span>Add Expense</span>
+          </a>
+          <a href="#/transactions" class="menu-item" data-route="transactions">
+            <i class="fa-solid fa-list"></i><span>Transactions</span>
+            <b class="menu-badge" id="menuCount">0</b>
+          </a>
+          <a href="#/reports" class="menu-item" data-route="reports">
+            <i class="fa-solid fa-chart-line"></i><span>Reports</span>
+          </a>
+          <a href="#/categories" class="menu-item" data-route="categories">
+            <i class="fa-solid fa-tag"></i><span>Categories</span>
+          </a>
+          <a href="#/settings" class="menu-item" data-route="settings">
+            <i class="fa-solid fa-gear"></i><span>Settings</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <i class="fa-solid fa-seedling"></i>
+          <p>Small steps in managing money today build a better tomorrow.</p>
+        </div>
+      </aside>
+
+      <div class="scrim" id="scrim" hidden></div>
+
+      <!-- ================= MAIN ================= -->
+
+      <main class="main" id="main">
+        <!-- HEADER -->
+
+        <header class="topbar">
+          <div class="topbar-left">
+            <button
+              class="icon-btn menu-toggle"
+              id="menuToggle"
+              aria-label="Toggle navigation"
+              aria-expanded="false"
+            >
+              <i class="fa-solid fa-bars"></i>
+            </button>
+            <h1 class="page-title" id="pageTitle">Dashboard</h1>
+          </div>
+
+          <div class="profile">
+            <button
+              class="icon-btn"
+              id="themeToggle"
+              aria-label="Toggle dark mode"
+              title="Toggle dark mode"
+            >
+              <i class="fa-solid fa-moon"></i>
+            </button>
+
+            <div class="date">
+              <i class="fa-regular fa-calendar"></i>
+              <span id="todayLabel">—</span>
+            </div>
+
+            <div class="user">
+              <div class="avatar" id="avatar">?</div>
+              <span id="userLabel">user</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- ================= DASHBOARD ================= -->
+
+        <section class="view" data-view="dashboard" hidden>
+          <div class="welcome">
+            <h2>Welcome back, <span id="dashName">friend</span> 👋</h2>
+            <p id="dashSub">Track your expenses, build a better future.</p>
+          </div>
+
+          <div class="cards" id="summaryCards"></div>
+
+          <div class="charts">
+            <div class="panel">
+              <div class="panel-header">
+                <div>
+                  <h3>Monthly Expense Overview</h3>
+                  <p class="panel-sub">Income vs expenses, last 6 months</p>
+                </div>
+                <div class="legend">
+                  <span><i class="income-dot"></i>Income</span>
+                  <span><i class="expense-dot"></i>Expenses</span>
+                </div>
+              </div>
+              <div class="bar-chart" id="barChart"></div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <div>
+                  <h3>Expense by Category</h3>
+                  <p class="panel-sub" id="donutSub">This month</p>
+                </div>
+              </div>
+              <div class="category-content" id="donutChart"></div>
+            </div>
+          </div>
+
+          <div class="bottom-grid">
+            <div class="panel transactions">
+              <div class="panel-header">
+                <h3>Recent Transactions</h3>
+                <a href="#/transactions" class="link"
+                  >View All <i class="fa-solid fa-arrow-right"></i
+                ></a>
+              </div>
+              <div id="recentTable"></div>
+            </div>
+
+            <div class="stack">
+              <div class="panel budget-panel">
+                <div class="panel-header">
+                  <h3><i class="fa-solid fa-chart-pie"></i>Monthly Budget</h3>
+                </div>
+
+                <label for="budgetInput">Spending limit for this month</label>
+                <div class="amount-input">
+                  <span id="budgetSymbol">₹</span>
+                  <input
+                    type="number"
+                    id="budgetInput"
+                    min="0"
+                    step="100"
+                    inputmode="decimal"
+                    placeholder="0"
+                  />
+                </div>
+
+                <div class="budget-status">
+                  <div>
+                    <span>Spent</span><strong id="budgetSpent">—</strong>
+                  </div>
+                  <div>
+                    <span>Remaining</span
+                    ><strong class="remaining" id="budgetLeft">—</strong>
+                  </div>
+                </div>
+
+                <div
+                  class="progress-background"
+                  role="progressbar"
+                  aria-label="Budget used"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  id="budgetTrack"
+                >
+                  <div class="progress-value" id="budgetBar"></div>
+                </div>
+
+                <p class="warning" id="budgetWarning" hidden></p>
+              </div>
+
+              <div class="panel add-expense">
+                <div class="panel-header">
+                  <h3><i class="fa-solid fa-circle-plus"></i>Add New Expense</h3>
+                </div>
+                <div id="quickFormSlot"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= ADD ================= -->
+
+        <section class="view" data-view="add" hidden>
+          <div class="narrow">
+            <div class="panel">
+              <div class="panel-header">
+                <div>
+                  <h3><i class="fa-solid fa-circle-plus"></i>Add a Transaction</h3>
+                  <p class="panel-sub">
+                    Record an expense or some income. Everything stays on this
+                    device.
+                  </p>
+                </div>
+              </div>
+              <div id="quickChipsWrap" hidden>
+                <label>Add again</label>
+                <div class="chips" id="quickChips"></div>
+              </div>
+
+              <div id="fullFormSlot"></div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header"><h3>Recently added</h3></div>
+              <div id="addRecent"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= TRANSACTIONS ================= -->
+
+        <section class="view" data-view="transactions" hidden>
+          <div class="panel">
+            <div class="toolbar">
+              <div class="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input
+                  type="search"
+                  id="fSearch"
+                  placeholder="Search description or category…"
+                  aria-label="Search transactions"
+                />
+              </div>
+
+              <select id="fType" aria-label="Filter by type">
+                <option value="all">All types</option>
+                <option value="expense">Expenses</option>
+                <option value="income">Income</option>
+              </select>
+
+              <select id="fCategory" aria-label="Filter by category"></select>
+              <select id="fMonth" aria-label="Filter by month"></select>
+
+              <select id="fSort" aria-label="Sort transactions">
+                <option value="date-desc">Newest first</option>
+                <option value="date-asc">Oldest first</option>
+                <option value="amount-desc">Highest amount</option>
+                <option value="amount-asc">Lowest amount</option>
+                <option value="name-asc">Name A–Z</option>
+              </select>
+
+              <div class="toolbar-actions">
+                <button class="btn ghost" id="fReset" type="button">
+                  <i class="fa-solid fa-rotate-left"></i>Reset
+                </button>
+                <button class="btn ghost" id="exportCsv" type="button">
+                  <i class="fa-solid fa-file-csv"></i>CSV
+                </button>
+              </div>
+            </div>
+
+            <div class="filter-summary" id="filterSummary"></div>
+            <div id="txTable"></div>
+            <div class="pager" id="txPager"></div>
+          </div>
+        </section>
+
+        <!-- ================= REPORTS ================= -->
+
+        <section class="view" data-view="reports" hidden>
+          <div class="panel report-head">
+            <div>
+              <h3>Monthly Report</h3>
+              <p class="panel-sub">Pick a month to break it down.</p>
+            </div>
+            <select id="reportMonth" aria-label="Report month"></select>
+          </div>
+
+          <div class="cards" id="reportStats"></div>
+
+          <div class="charts">
+            <div class="panel">
+              <div class="panel-header">
+                <div>
+                  <h3>12-Month Trend</h3>
+                  <p class="panel-sub">Net savings per month</p>
+                </div>
+              </div>
+              <div id="trendChart"></div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header"><h3>Category Breakdown</h3></div>
+              <div id="reportCats"></div>
+            </div>
+          </div>
+
+          <div class="bottom-grid">
+            <div class="panel">
+              <div class="panel-header"><h3>Biggest Expenses</h3></div>
+              <div id="topSpend"></div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <h3><i class="fa-solid fa-lightbulb"></i>Insights</h3>
+              </div>
+              <div id="insights"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= CATEGORIES ================= -->
+
+        <section class="view" data-view="categories" hidden>
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h3>Add a Category</h3>
+                <p class="panel-sub">
+                  Group your spending however makes sense to you.
+                </p>
+              </div>
+            </div>
+
+            <form id="catForm" class="cat-form" novalidate>
+              <div>
+                <label for="catName">Name</label>
+                <input
+                  type="text"
+                  id="catName"
+                  name="name"
+                  placeholder="e.g. Groceries"
+                  maxlength="24"
+                />
+              </div>
+
+              <div>
+                <label for="catKind">Applies to</label>
+                <select id="catKind" name="kind">
+                  <option value="expense">Expenses</option>
+                  <option value="income">Income</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="catIcon">Icon</label>
+                <select id="catIcon" name="icon"></select>
+              </div>
+
+              <div>
+                <label for="catColor">Colour</label>
+                <input
+                  type="color"
+                  id="catColor"
+                  name="color"
+                  value="#2876d8"
+                />
+              </div>
+
+              <button class="btn" type="submit">
+                <i class="fa-solid fa-plus"></i>Add
+              </button>
+            </form>
+            <p class="field-error" id="catError" hidden></p>
+          </div>
+
+          <div class="cat-grid" id="catGrid"></div>
+        </section>
+
+        <!-- ================= SETTINGS ================= -->
+
+        <section class="view" data-view="settings" hidden>
+          <div class="settings-grid">
+            <div class="panel">
+              <div class="panel-header"><h3>Profile</h3></div>
+
+              <label for="setName">Display name</label>
+              <input type="text" id="setName" maxlength="30" placeholder="Your name" />
+
+              <label for="setCurrency">Currency</label>
+              <select id="setCurrency"></select>
+
+              <label for="setRange">Dashboard chart range</label>
+              <select id="setRange">
+                <option value="6">Last 6 months</option>
+                <option value="12">Last 12 months</option>
+                <option value="4">Last 4 months</option>
+              </select>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header"><h3>Appearance</h3></div>
+              <label for="setTheme">Theme</label>
+              <select id="setTheme">
+                <option value="system">Match system</option>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+              </select>
+
+              <label for="setLimit">Default monthly limit</label>
+              <div class="amount-input">
+                <span id="limitSymbol">₹</span>
+                <input type="number" id="setLimit" min="0" step="100" />
+              </div>
+              <p class="hint">
+                Used for any month you haven't given its own budget.
+              </p>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header"><h3>Your Data</h3></div>
+              <p class="hint" id="storageNote">—</p>
+
+              <div class="btn-row">
+                <button class="btn ghost" id="exportJson" type="button">
+                  <i class="fa-solid fa-download"></i>Export backup
+                </button>
+                <button class="btn ghost" id="importJson" type="button">
+                  <i class="fa-solid fa-upload"></i>Import backup
+                </button>
+                <input type="file" id="importFile" accept="application/json" hidden />
+              </div>
+
+              <div class="btn-row">
+                <button class="btn ghost" id="loadSample" type="button">
+                  <i class="fa-solid fa-flask"></i>Load sample data
+                </button>
+                <button class="btn danger" id="clearAll" type="button">
+                  <i class="fa-solid fa-trash"></i>Delete everything
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ================= OVERLAYS ================= -->
+
+    <div class="modal-host" id="modalHost" hidden>
+      <div class="modal-backdrop" data-close></div>
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalTitle"
+      >
+        <div class="modal-header">
+          <h3 id="modalTitle">Edit</h3>
+          <button class="icon-btn" data-close aria-label="Close">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+      </div>
+    </div>
+
+    <div class="toast-host" id="toastHost" aria-live="polite"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
